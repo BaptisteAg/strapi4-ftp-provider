@@ -1,0 +1,23 @@
+{
+  "name": "strapi4-ftp-provider",
+  "version": "1.0.0",
+  "description": "A custom provider for strapi 4 to use ftp for the media library plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BaptisteAg/strapi-provider-ftp.git"
+  },
+  "author": "BaptisteAg",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BaptisteAg/strapi-provider-ftp/issues"
+  },
+  "homepage": "https://github.com/BaptisteAg/strapi-provider-ftp#readme",
+  "dependencies": {
+    "basic-ftp": "^5.0.2",
+    "stream": "^0.0.2"
+  }
+}
