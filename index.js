@@ -8,6 +8,7 @@ module.exports = {
             await client.access({
                 host: config.host,
                 user: config.user,
+                port:config.port,
                 password: config.password,
                 secure: config.secure,
             });
