@@ -48,9 +48,8 @@ module.exports = {
         return {
             async upload(file) {
                 await uploadStream(file);
-                file.url = `/uploads/${file.hash}${file.ext}`;
+                file.url = `${config.baseUrl}${file.hash}${file.ext}`;
             },
-
 
             delete(file) {
                 return new Promise((resolve, reject) => {
