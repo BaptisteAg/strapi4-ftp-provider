@@ -13,9 +13,11 @@ or
 ```bash
 npm i strapi4-ftp-provider
 ```
-## Usage
+## Configuration
 
-After installing the plugin, you need to create a plugins.js file in the config directory if it doesn't already exist. This file should contain the following information:
+### Provider Configuration
+
+`./config/plugins.js` or `./config/plugins.ts` for TypeScript projects:
 
 ```javascript
 module.exports = ({ env }) => ({
@@ -36,7 +38,46 @@ module.exports = ({ env }) => ({
 });
 ```
 
-You will also need to create a .env file with the following information (replace the values with your own FTP credentials):
+### Security Middleware Configuration
+
+Due to the default settings in the Strapi Security Middleware you will need to modify the `contentSecurityPolicy` settings to properly see thumbnail previews in the Media Library. You should replace `strapi::security` string with the object bellow instead as explained in the [middleware configuration](https://docs.strapi.io/developer-docs/latest/setup-deployment-guides/configurations/required/middlewares.html#loading-order) documentation.
+
+`./config/middlewares.js`
+
+```js
+module.exports = ({ env }) => [
+  // ...
+  {
+    name: 'strapi::security',
+    config: {
+      contentSecurityPolicy: {
+        useDefaults: true,
+        directives: {
+          'connect-src': ["'self'", 'https:'],
+          'img-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            env('FTP_BASE_URL'),
+          ],
+          'media-src': [
+            "'self'",
+            'data:',
+            'blob:',
+            env('FTP_BASE_URL'),
+          ],
+          upgradeInsecureRequests: null,
+        },
+      },
+    },
+  },
+  // ...
+];
+```
+
+### Environment variables
+
+You will also need to create a .env file with the following information (replace the values with your own configuration):
 ```makefile
 FTP_HOST=ftp.example.com
 FTP_PORT=21
