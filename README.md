@@ -9,7 +9,7 @@ This plugin can be installed with the following command:
 ```bash
 yarn add strapi4-ftp-provider
 ```
-or 
+or
 ```bash
 npm i strapi4-ftp-provider
 ```
@@ -24,7 +24,7 @@ module.exports = ({ env }) => ({
       provider: "strapi4-ftp-provider",
       providerOptions: {
         host: env("FTP_HOST"),
-        port: env("FTP_PORT"),
+        port: env("FTP_PORT",21),
         user: env("FTP_USER"),
         password: env("FTP_PASSWORD"),
         secure: env.bool("FTP_SECURE", false),
