@@ -24,16 +24,18 @@ module.exports = {
             });
         }
 
-        const uploadStream = async (file) => {
-            const path = `${config.path}/${file.hash}${file.ext}`;
+        const uploadStream = async (inputFile) => {
+            const file = { ...inputFile }; // Ajout: Création d'une copie de l'objet
+            file.buffer = await stream2buffer(file.stream); // Ajout: Conversion du stream en buffer
+
+            const path = `${config.path}${file.hash}${file.ext}`;
             const client = await getConnection();
             try {
                 const source = new Readable();
-                source._read = () => { }; // _read is required but you can noop it
+                source._read = () => { };
                 source.push(file.buffer);
                 source.push(null);
                 await client.uploadFrom(source, path);
-
             } catch (error) {
                 throw error;
             } finally {
@@ -42,7 +44,7 @@ module.exports = {
         };
 
         const deleteFile = async (file) => {
-            const path = `${config.path}/${file.hash}${file.ext}`;
+            const path = `${config.path}${file.hash}${file.ext}`;
             const client = await getConnection();
 
             try {
@@ -57,13 +59,14 @@ module.exports = {
         return {
             async upload(file) {
                 await uploadStream(file);
-                file.url = `${config.baseUrl}/${file.hash}${file.ext}`;
+                file.url = `${config.baseUrl}${file.hash}${file.ext}`;
+                delete file.buffer; // Ajout: Suppression du champ buffer
             },
-
+          
             async uploadStream(file) {
-                file.buffer = await stream2buffer(file.stream);
                 await uploadStream(file);
-                file.url = `${config.baseUrl}/${file.hash}${file.ext}`;
+                file.url = `${config.baseUrl}${file.hash}${file.ext}`;
+                delete file.buffer;
             },
 
             delete(file) {
