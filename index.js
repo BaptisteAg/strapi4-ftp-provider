@@ -63,13 +63,11 @@ module.exports = {
                 file.url = `${config.baseUrl}${file.hash}${file.ext}`;
                 delete file.buffer;
             },
-
             async uploadStream(file) {
                 await uploadStream(file);
                 file.url = `${config.baseUrl}${file.hash}${file.ext}`;
                 delete file.buffer;
             },
-
             delete(file) {
                 return new Promise((resolve, reject) => {
                     deleteFile(file)
