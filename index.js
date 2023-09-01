@@ -15,17 +15,28 @@ module.exports = {
             return client;
         };
 
-        const uploadStream = async (file) => {
-            const path = `${config.path}/${file.hash}${file.ext}`;
+        const stream2buffer = async (stream) => {
+            return new Promise((resolve, reject) => {
+                const _buf = [];
+                stream.on('data', (chunk) => _buf.push(chunk));
+                stream.on('end', () => resolve(Buffer.concat(_buf)));
+                stream.on('error', (err) => reject(err));
+            });
+        }
+
+        const uploadStream = async (inputFile) => {
+            const file = { ...inputFile }; // Создаём копию объекта
+            file.buffer = await stream2buffer(file.stream);
+
+            const path = `${config.path}${file.hash}${file.ext}`;
             const client = await getConnection();
 
             try {
                 const source = new Readable();
-                source._read = () => {}; // _read is required but you can noop it
+                source._read = () => { }; // _read is required but you can noop it
                 source.push(file.buffer);
                 source.push(null);
                 await client.uploadFrom(source, path);
-
             } catch (error) {
                 throw error;
             } finally {
@@ -34,7 +45,7 @@ module.exports = {
         };
 
         const deleteFile = async (file) => {
-            const path = `${config.path}/${file.hash}${file.ext}`;
+            const path = `${config.path}${file.hash}${file.ext}`;
             const client = await getConnection();
 
             try {
@@ -49,15 +60,21 @@ module.exports = {
         return {
             async upload(file) {
                 await uploadStream(file);
-                file.url = `/uploads/${file.hash}${file.ext}`;
+                file.url = `${config.baseUrl}${file.hash}${file.ext}`;
+                delete file.buffer;
             },
 
+            async uploadStream(file) {
+                await uploadStream(file);
+                file.url = `${config.baseUrl}${file.hash}${file.ext}`;
+                delete file.buffer;
+            },
 
             delete(file) {
                 return new Promise((resolve, reject) => {
                     deleteFile(file)
                         .then(() => {
-                               resolve();
+                            resolve();
                         })
                         .catch((error) => {
                             reject(error);
